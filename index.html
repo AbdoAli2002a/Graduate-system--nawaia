@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نظام إدارة شؤون الخريجين</title>
+  <meta name="description"
+    content="نظام احترافي لإدارة شؤون الخريجين، يشمل إضافة وتعديل وتخزين بيانات الخريجين وتوفير تقارير وإمكانيات بحث متقدمة." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+
+<body>
+
+  <!-- ===== LOGIN SCREEN ===== -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="logo-icon"><img src="src/logo.png" alt="لوجو الكلية"></div>
+        <h1>نظام إدارة شؤون الخريجين</h1>
+        <p>كلية التربية النوعية جامعة المنيا </p>
+      </div>
+      <form id="loginForm" class="login-form">
+        <div class="form-group">
+          <label for="username">اسم المستخدم</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" id="username" placeholder="أدخل اسم المستخدم" autocomplete="username" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">كلمة المرور</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="password" placeholder="أدخل كلمة المرور" autocomplete="current-password" />
+            <span class="toggle-pass" onclick="togglePassword()" id="togglePassBtn">👁️</span>
+          </div>
+        </div>
+        <div id="loginError" class="login-error" style="display:none;">بيانات الدخول غير صحيحة</div>
+        <button type="submit" class="btn-login">
+          <span>تسجيل الدخول</span>
+          <span>←</span>
+        </button>
+      </form>
+      <div class="login-footer">النظام محمي بكلمة مرور &nbsp;|&nbsp; جميع الحقوق محفوظة لدي عبدالرحمن علي خالد 2026
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== APP SHELL ===== -->
+  <div id="appShell" class="app-shell" style="display:none;">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">🎓</div>
+        <div class="sidebar-title">
+          <span class="sidebar-main-title">شؤون الخريجين</span>
+          <span class="sidebar-sub-title">لوحة التحكم</span>
+        </div>
+        <button class="sidebar-close-btn" id="sidebarCloseBtn" onclick="toggleSidebar()">✕</button>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" onclick="showPage('dashboard', this)" data-tooltip="لوحة الإحصائيات">
+          <span class="nav-icon">📊</span><span class="nav-label">لوحة التحكم</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('alumniList', this)" data-tooltip="قائمة الخريجين">
+          <span class="nav-icon">👥</span><span class="nav-label">الخريجون</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('addAlumni', this)" data-tooltip="إضافة خريج جديد">
+          <span class="nav-icon">➕</span><span class="nav-label">إضافة خريج</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('reports', this)" data-tooltip="التقارير والإحصائيات">
+          <span class="nav-icon">📋</span><span class="nav-label">التقارير</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('statistics', this)" data-tooltip="الإحصائيات والتوظيف">
+          <span class="nav-icon">📈</span><span class="nav-label">الإحصائيات</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn-logout" onclick="logout()">
+          <span>🚪</span><span>تسجيل الخروج</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="mainContent">
+      <!-- TOP HEADER -->
+      <header class="top-header">
+        <div class="header-right">
+          <button class="hamburger" onclick="toggleSidebar()" id="hamburgerBtn">☰</button>
+          <div class="breadcrumb" id="breadcrumb">لوحة التحكم</div>
+        </div>
+        <div class="header-left">
+          <div class="header-date" id="headerDate"></div>
+          <div class="admin-badge">
+            <span class="admin-avatar">A</span>
+            <span class="admin-name">مدير النظام</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAGES CONTAINER -->
+      <div class="pages-container">
+
+        <!-- ===== DASHBOARD ===== -->
+        <section class="page active" id="page-dashboard">
+          <div class="page-header">
+            <h2 class="page-title">لوحة التحكم الرئيسية</h2>
+            <p class="page-subtitle">نظرة عامة على بيانات الخريجين</p>
+          </div>
+          <div class="stats-grid" id="statsGrid"></div>
+          <div class="charts-row">
+            <div class="chart-card">
+              <h3>الخريجون المسجلون مؤخراً</h3>
+              <div class="recent-list" id="recentList"></div>
+            </div>
+            <div class="chart-card">
+              <h3>إحصائيات سريعة</h3>
+              <div id="quickStats" class="quick-stats"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== ALUMNI LIST ===== -->
+        <section class="page" id="page-alumniList">
+          <div class="page-header">
+            <h2 class="page-title">قائمة الخريجين</h2>
+            <div class="page-actions">
+              <button class="btn btn-print" onclick="printTable()" title="طباعة">🖨️ طباعة</button>
+              <button class="btn btn-primary" onclick="showPage('addAlumni', null)">➕ إضافة خريج</button>
+            </div>
+          </div>
+          <div class="search-bar-container">
+            <div class="search-wrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="searchInput" class="search-input"
+                placeholder="ابحث بالاسم أو الرقم القوميأو رقم الخريج أو الهاتف..." oninput="doSearch()" />
+            </div>
+            <select class="filter-select" id="filterDepartment" onchange="doSearch()">
+              <option value="">كل الأقسام</option>
+              <option value="تكنولوجيا التعليم">تكنولوجيا التعليم</option>
+              <option value="حاسب الي">حاسب الي</option>
+              <option value="التربية الموسيقية">التربية الموسيقية</option>
+              <option value="الاقتصاد المنزلي">الاقتصاد المنزلي</option>
+              <option value="اعلام اذاعة">اعلام اذاعة</option>
+              <option value="اعلام صحافة">اعلام صحافة</option>
+            </select>
+            <select class="filter-select" id="filterGender" onchange="doSearch()">
+              <option value="">كل الأجناس</option>
+              <option value="ذكر">ذكر</option>
+              <option value="أنثى">أنثى</option>
+            </select>
+            <select class="filter-select" id="filterMilitary" onchange="doSearch()">
+              <option value="">الخدمة العسكرية</option>
+              <option value="أدى الخدمة">أدى الخدمة</option>
+              <option value="معفى">معفى</option>
+              <option value="لم يؤد الخدمة">لم يؤد الخدمة</option>
+              <option value="غير منطبق">غير منطبق</option>
+            </select>
+          </div>
+          <div class="table-container" id="tableContainer">
+            <table class="data-table" id="alumniTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>رقم الخريج</th>
+                  <th>التقدير</th>
+                  <th>المجموع</th>
+                  <th>النسبة</th>
+                  <th>الاسم الكامل</th>
+                  <th>القسم</th>
+                  <th>الرقم القومي</th>
+                  <th>الهاتف</th>
+                  <th>الجنس</th>
+                  <th>الجنسية</th>
+                  <th>المحافظة</th>
+                  <th>الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="alumniTableBody"></tbody>
+            </table>
+            <div id="noResultsMsg" class="no-results" style="display:none;">لا توجد نتائج مطابقة للبحث</div>
+          </div>
+          <div class="pagination" id="pagination"></div>
+        </section>
+
+        <!-- ===== ADD/EDIT FORM ===== -->
+        <section class="page" id="page-addAlumni">
+          <div class="page-header">
+            <h2 class="page-title" id="formTitle">إضافة خريج جديد</h2>
+            <button class="btn btn-secondary" onclick="showPage('alumniList', null)">← رجوع</button>
+          </div>
+          <form id="alumniForm" class="alumni-form" onsubmit="saveAlumni(event)">
+            <input type="hidden" id="editId" />
+
+            <!-- Section 1: Personal Info -->
+            <div class="form-section">
+              <div class="form-section-header"><span>👤</span> البيانات الشخصية</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>الاسم الكامل *</label>
+                  <input type="text" id="f_fullName" required placeholder="الاسم الرباعي" />
+                </div>
+                <div class="form-group">
+                  <label>القسم</label>
+                  <select id="f_department">
+                    <option value="">-- اختر --</option>
+                    <option value="تكنولوجيا التعليم">تكنولوجيا التعليم</option>
+                    <option value="حاسب الي">حاسب الي</option>
+                    <option value="التربية الموسيقية">التربية الموسيقية</option>
+                    <option value="الاقتصاد المنزلي">الاقتصاد المنزلي</option>
+                    <option value="اعلام اذاعة">اعلام اذاعة</option>
+                    <option value="اعلام صحافة">اعلام صحافة</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>الرقم القومي*</label>
+                  <input type="text" id="f_nationalId" required placeholder="00000000000" maxlength="20" />
+                </div>
+                <div class="form-group">
+                  <label>رقم الهاتف</label>
+                  <input type="tel" id="f_phone" placeholder="01000000000" />
+                </div>
+                <div class="form-group">
+                  <label>تاريخ الميلاد</label>
+                  <input type="date" id="f_dob" />
+                </div>
+                <div class="form-group">
+                  <label>محل الميلاد</label>
+                  <input type="text" id="f_pob" placeholder="المدينة / القرية" />
+                </div>
+                <div class="form-group">
+                  <label>الجنس</label>
+                  <select id="f_gender">
+                    <option value="">-- اختر --</option>
+                    <option value="ذكر">ذكر</option>
+                    <option value="أنثى">أنثى</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>الجنسية</label>
+                  <input type="text" id="f_nationality" placeholder="مصري / أجنبي..." />
+                </div>
+                <div class="form-group">
+                  <label>الديانة</label>
+                  <select id="f_religion">
+                    <option value="">-- اختر --</option>
+                    <option value="مسلم">مسلم</option>
+                    <option value="مسيحي">مسيحي</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>البريد الإلكتروني</label>
+                  <input type="email" id="f_email" placeholder="example@mail.com" />
+                </div>
+                <div class="form-group form-group-full">
+                  <label>العنوان</label>
+                  <input type="text" id="f_address" placeholder="الشارع / الحي / المدينة / المحافظة" />
+                </div>
+                <div class="form-group">
+                  <label>محافظة الإقامة</label>
+                  <select id="f_governorate">
+                    <option value="">-- اختر المحافظة --</option>
+                    <option>القاهرة</option>
+                    <option>الجيزة</option>
+                    <option>الإسكندرية</option>
+                    <option>الدقهلية</option>
+                    <option>البحيرة</option>
+                    <option>الفيوم</option>
+                    <option>الغربية</option>
+                    <option>الإسماعيلية</option>
+                    <option>المنوفية</option>
+                    <option>المنيا</option>
+                    <option>القليوبية</option>
+                    <option>الوجه البحري</option>
+                    <option>الشرقية</option>
+                    <option>جنوب سيناء</option>
+                    <option>كفر الشيخ</option>
+                    <option>مطروح</option>
+                    <option>الأقصر</option>
+                    <option>قنا</option>
+                    <option>أسوان</option>
+                    <option>سوهاج</option>
+                    <option>السويس</option>
+                    <option>بني سويف</option>
+                    <option>دمياط</option>
+                    <option>الوادي الجديد</option>
+                    <option>شمال سيناء</option>
+                    <option>البحر الأحمر</option>
+                    <option>أسيوط</option>
+                    <option>بورسعيد</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 2: Graduate Info -->
+            <div class="form-section">
+              <div class="form-section-header"><span>🎓</span> بيانات الخريج</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>رقم الخريج</label>
+                  <input type="text" id="f_gradNum" placeholder="رقم تسجيل الخريج" />
+                </div>
+                <div class="form-group">
+                  <label>تاريخ الالتحاق بالكلية</label>
+                  <input type="date" id="f_enrollDate" />
+                </div>
+                <div class="form-group">
+                  <label>نوع شهادة الثانوية</label>
+                  <select id="f_hsType">
+                    <option value="">-- اختر --</option>
+                    <option value="ثانوية عامة">ثانوية عامة</option>
+                    <option value="ثانوية أزهرية">ثانوية أزهرية</option>
+                    <option value="دبلوم فني">دبلوم فني</option>
+                    <option value="أخرى">أخرى</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>درجة الثانوية</label>
+                  <input type="text" id="f_hsGrade" placeholder="مثال: 95.5%" />
+                </div>
+                <div class="form-group">
+                  <label>التقدير</label>
+                  <input type="text" id="f_gradEstimate" placeholder="مثال: ممتاز / جيد جدًا..." />
+                </div>
+                <div class="form-group">
+                  <label>المجموع</label>
+                  <input type="text" id="f_gradTotal" placeholder="مثال: 250" />
+                </div>
+                <div class="form-group">
+                  <label>النسبة</label>
+                  <input type="text" step="0.01" id="f_gradPercent" placeholder="مثال: 83.33" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 3: Employment Info -->
+            <div class="form-section">
+              <div class="form-section-header"><span>💼</span> بيانات التوظيف والدورات</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>المهنة / الوظيفة</label>
+                  <input type="text" id="f_occupation" placeholder="المهنة الحالية" />
+                </div>
+                <div class="form-group">
+                  <label>سنة التوظيف</label>
+                  <input type="number" id="f_empYear" placeholder="مثال: 2024" />
+                </div>
+                <div class="form-group">
+                  <label>سنوات الخبرة</label>
+                  <input type="number" id="f_expYears" placeholder="مثال: 3" />
+                </div>
+                <div class="form-group form-group-full">
+                  <label>الدورات الحاصل عليها</label>
+                  <textarea id="f_coursesAttended" placeholder="اذكر الدورات..." rows="2"></textarea>
+                </div>
+                <div class="form-group form-group-full">
+                  <label>الكورسات التي يحتاجها</label>
+                  <textarea id="f_coursesNeeded" placeholder="اذكر الكورسات..." rows="2"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 4: ID Card & Military -->
+            <div class="form-section">
+              <div class="form-section-header"><span>🪪</span> بيانات بطاقة الهوية والخدمة العسكرية</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>تاريخ إصدار البطاقة</label>
+                  <input type="date" id="f_idIssueDate" />
+                </div>
+                <div class="form-group">
+                  <label>مكان إصدار البطاقة</label>
+                  <input type="text" id="f_idIssuePlace" placeholder="الجهة المُصدِرة للبطاقة" />
+                </div>
+                <div class="form-group">
+                  <label>الحالة العسكرية</label>
+                  <select id="f_military">
+                    <option value="">-- اختر --</option>
+                    <option value="أدى الخدمة">أدى الخدمة</option>
+                    <option value="معفى">معفى</option>
+                    <option value="لم يؤد الخدمة">لم يؤد الخدمة</option>
+                    <option value="غير منطبق">غير منطبق</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>الرقم العسكري</label>
+                  <input type="text" id="f_militaryNum" placeholder="الرقم العسكري (إن وجد)" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 5: Payment & Signatures -->
+            <div class="form-section">
+              <div class="form-section-header"><span>💳</span> بيانات السداد والتوقيعات</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>رقم إيصال الدفع</label>
+                  <input type="text" id="f_payReceipt" placeholder="رقم الإيصال" />
+                </div>
+                <div class="form-group">
+                  <label>تاريخ الدفع</label>
+                  <input type="date" id="f_payDate" />
+                </div>
+                <div class="form-group">
+                  <label>التوقيع بالعربية</label>
+                  <input type="text" id="f_sigAr" placeholder="الاسم بالعربية للتوقيع" />
+                </div>
+                <div class="form-group">
+                  <label>التوقيع بالإنجليزية</label>
+                  <input type="text" id="f_sigEn" placeholder="الاسم بالإنجليزية للتوقيع" dir="ltr" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 6: Photo & Documents -->
+            <div class="form-section">
+              <div class="form-section-header"><span>📷</span> الصور والمستندات</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>صورة الخريج</label>
+                  <div class="file-upload-wrapper">
+                    <input type="file" id="f_photo" accept="image/*" onchange="previewImage('f_photo','photoPreview')"
+                      class="file-input" />
+                    <label for="f_photo" class="file-upload-label">📷 اختر صورة الخريج</label>
+                    <div class="img-preview-container">
+                      <img id="photoPreview" class="img-preview" alt="معاينة الصورة" />
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>صورة بطاقة الهوية</label>
+                  <div class="file-upload-wrapper">
+                    <input type="file" id="f_idCard" accept="image/*"
+                      onchange="previewImage('f_idCard','idCardPreview')" class="file-input" />
+                    <label for="f_idCard" class="file-upload-label">🪪 اختر صورة البطاقة</label>
+                    <div class="img-preview-container">
+                      <img id="idCardPreview" class="img-preview" alt="معاينة البطاقة" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-lg" id="saveBtn">💾 حفظ البيانات</button>
+              <button type="button" class="btn btn-secondary btn-lg" onclick="resetForm()">🔄 مسح الحقول</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ===== REPORTS ===== -->
+        <section class="page" id="page-reports">
+          <div class="page-header">
+            <h2 class="page-title">التقارير والإحصائيات</h2>
+            <div class="page-actions">
+              <select class="filter-select" id="printDeptFilter">
+                <option value="">كل الأقسام</option>
+                <option value="تكنولوجيا التعليم">تكنولوجيا التعليم</option>
+                <option value="حاسب الي">حاسب الي</option>
+                <option value="التربية الموسيقية">التربية الموسيقية</option>
+                <option value="الاقتصاد المنزلي">الاقتصاد المنزلي</option>
+                <option value="اعلام اذاعة">اعلام اذاعة</option>
+                <option value="اعلام صحافة">اعلام صحافة</option>
+              </select>
+              <button class="btn btn-print" onclick="printFilteredReport()">🖨️ طباعة حسب القسم</button>
+              <button class="btn btn-print" onclick="printReport()">🖨️ طباعة التقرير الشامل</button>
+            </div>
+          </div>
+          <div id="reportContent">
+            <div class="report-grid" id="reportGrid"></div>
+            <div class="report-section">
+              <h3>🏫 توزيع الخريجين حسب القسم</h3>
+              <div id="deptChart" class="bar-chart-container"></div>
+            </div>
+            <div class="report-section">
+              <h3>📊 توزيع الخريجين حسب الجنس</h3>
+              <div id="genderChart" class="bar-chart-container"></div>
+            </div>
+            <div class="report-section">
+              <h3>🏛️ توزيع الخريجين حسب المحافظة</h3>
+              <div id="govChart" class="bar-chart-container"></div>
+            </div>
+            <div class="report-section">
+              <h3>⚔️ توزيع الخريجين حسب الحالة العسكرية</h3>
+              <div id="militaryChart" class="bar-chart-container"></div>
+            </div>
+            <div class="report-table-section">
+              <h3>📋 قائمة الخريجين الكاملة</h3>
+              <div id="fullReportTableContainer"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== STATISTICS ===== -->
+        <section class="page" id="page-statistics">
+          <div class="page-header">
+            <h2 class="page-title">الإحصائيات والتوظيف</h2>
+            <div class="page-actions">
+              <select class="filter-select" id="statsYearFilter" onchange="renderStatisticsPage()">
+                <option value="">كل سنوات التوظيف</option>
+              </select>
+              <button class="btn btn-print" onclick="printStatistics()">🖨️ طباعة الإحصائيات</button>
+            </div>
+          </div>
+          <div class="stats-grid" id="employmentStatsGrid"></div>
+
+          <div class="charts-row">
+            <div class="chart-card" style="flex:2;">
+              <h3>💼 توزيع المهن والوظائف</h3>
+              <div style="position: relative; height: 320px; width: 100%;">
+                <canvas id="occupationChart"></canvas>
+              </div>
+            </div>
+            <div class="chart-card" style="flex:1;">
+              <h3>📌 معدل التوظيف العام</h3>
+              <div style="position: relative; height: 320px; width: 100%;">
+                <canvas id="employmentRateChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="charts-row">
+            <div class="chart-card" style="flex:1;">
+              <h3>📈 سنوات الخبرة</h3>
+              <div style="position: relative; height: 320px; width: 100%;">
+                <canvas id="experienceChart"></canvas>
+              </div>
+            </div>
+            <div class="chart-card" style="flex:2;">
+              <h3>📚 نظرة على الكورسات (الأكثر طلباً وحضوراً)</h3>
+              <div id="coursesStats" class="quick-stats"></div>
+            </div>
+          </div>
+
+          <div class="report-table-section">
+            <h3>📋 قائمة الموظفين</h3>
+            <div id="employmentTableContainer"></div>
+          </div>
+        </section>
+
+        <!-- ===== ALUMNI PROFILE VIEW ===== -->
+        <section class="page" id="page-viewAlumni">
+          <div class="page-header">
+            <h2 class="page-title">ملف الخريج</h2>
+            <div class="page-actions">
+              <button class="btn btn-print" onclick="printProfile()">🖨️ طباعة الملف</button>
+              <button class="btn btn-secondary" onclick="showPage('alumniList', null)">← رجوع للقائمة</button>
+            </div>
+          </div>
+          <div id="profileContent" class="profile-card"></div>
+        </section>
+
+      </div><!-- end pages-container -->
+    </div><!-- end main-content -->
+  </div><!-- end appShell -->
+
+  <!-- TOAST Notification -->
+  <div id="toast" class="toast"></div>
+
+  <!-- CONFIRM DIALOG -->
+  <div id="confirmOverlay" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h3 id="confirmTitle">تأكيد الحذف</h3>
+      <p id="confirmMsg">هل أنت متأكد من حذف هذا السجل؟ لا يمكن التراجع عن هذا الإجراء.</p>
+      <div class="modal-actions">
+        <button class="btn btn-danger" id="confirmYesBtn">نعم، احذف</button>
+        <button class="btn btn-secondary" onclick="closeConfirm()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase: قاعدة بيانات سحابية لحفظ بيانات الخريجين -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- Chart.js for interactive statistics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script src="app.js"></script>
+  <script src="src/firebaseConfig.js"></script>
+</body>
+
+</html>
