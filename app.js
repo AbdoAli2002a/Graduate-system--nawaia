@@ -8,7 +8,7 @@
 // ===== CONSTANTS =====
 const STORAGE_KEY = 'alumni_db'; // لم يعد يُستخدم للتخزين الرئيسي، يمكن استخدامه لاحقاً للتخزين المؤقت إذا رغبت
 const ADMIN_USER = 'abdo';
-const ADMIN_PASS = 'abdo2002';
+const ADMIN_PASS = 'eman2002';
 const ROWS_PER_PAGE = 10;
 
 // ===== STATE =====
